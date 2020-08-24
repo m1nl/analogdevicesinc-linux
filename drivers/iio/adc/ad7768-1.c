@@ -254,22 +254,19 @@ static int ad7768_spi_reg_write(struct ad7768_state *st,
 	return spi_sync_transfer(st->spi, &xfer, 1);
 }
 
-static int ad7768_send_sync_pulse(struct ad7768_state *st)
+static int ad7768_spi_reg_write_masked(struct ad7768_state *st,
+				       unsigned int addr,
+				       unsigned int mask,
+				       unsigned int val)
 {
-	/*
-	 * The datasheet specifies a minimum SYNC_IN pulse width of 1.5 × Tmclk,
-	 * where Tmclk is the MCLK period. The supported MCLK frequencies range
-	 * from 0.6 MHz to 17 MHz, which corresponds to a minimum SYNC_IN pulse
-	 * width of approximately 2.5 µs in the worst-case scenario (0.6 MHz).
-	 *
-	 * Add a delay to ensure the pulse width is always sufficient to
-	 * trigger synchronization.
-	 */
-	gpiod_set_value_cansleep(st->gpio_sync_in, 1);
-	fsleep(3);
-	gpiod_set_value_cansleep(st->gpio_sync_in, 0);
+	unsigned int reg_val;
+	int ret;
 
-	return 0;
+	ret = ad7768_spi_reg_read(st, addr, &reg_val, 1);
+	if (ret < 0)
+		return ret;
+
+	return ad7768_spi_reg_write(st, addr, (reg_val & ~mask) | val);
 }
 
 static int ad7768_set_mode(struct ad7768_state *st,
