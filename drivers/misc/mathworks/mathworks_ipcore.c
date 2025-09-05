@@ -100,7 +100,6 @@ static int mathworks_ipcore_of_probe(struct platform_device *op)
 
     if (!mwdev->mw_ip_info->mem){
         dev_err(dev, "Failed to get resource for platform device\n");
-        return -ENOENT;
     }
 
     status = of_property_read_u32(dev->of_node, "mathworks,rst-reg", &mwdev->rst_reg);
