@@ -67,6 +67,7 @@ struct mw_stream_iio_chandev {
 	enum mw_stream_iio_reset_tlast_mode		reset_tlast_mode;
 	enum mw_stream_iio_reset_ip_mode		reset_ip_mode;
 	int										tlast_cntr_addr;
+	int										ip_info_addr;
 	int										num_data_chan;
 };
 
@@ -297,7 +298,6 @@ static int devm_mw_stream_configure_buffer(struct iio_dev *indio_dev, enum iio_b
 		return ret;
 	}
 
-	indio_dev->modes = INDIO_BUFFER_HARDWARE;
 	indio_dev->setup_ops = &mw_stream_iio_buffer_setup_ops;
 
 	return 0;
@@ -355,7 +355,7 @@ static int mw_stream_setup_scan_type(struct iio_dev *indio_dev, struct device_no
 		dev_err(&mwchan->dev, "Missing data-format specifier for %s\n", node->name);
 		return status;
 	}
-	status = sscanf(fmt, "%c%u/%u>>%u", &sign, &storagebits, &realbits, &shift);
+	status = sscanf(fmt, "%c%u/%u>>%u", &sign, &realbits, &storagebits, &shift);
 
 	if (status != 4) {
 		dev_err(&mwchan->dev, "Invalid data-format specifier for %s\n", node->name);
@@ -441,9 +441,10 @@ static int devm_mw_stream_iio_register(struct iio_dev *indio_dev) {
 	mwchan->num_data_chan = mw_stream_count_data_channels(indio_dev);
 
 	indio_dev->num_channels = mwchan->num_data_chan;
-	indio_dev->num_channels++; /* info channel */
-	if (mwchan->tlast_cntr_addr != -EINVAL)
-		indio_dev->num_channels++;
+	if (mwchan->mwdev->mw_ip_info->mem && mwchan->ip_info_addr != -EINVAL)
+		indio_dev->num_channels++; /* info channel */
+	if (mwchan->mwdev->mw_ip_info->mem && mwchan->tlast_cntr_addr != -EINVAL)
+		indio_dev->num_channels++; /* tlast channel */
 
 	indio_dev->channels = devm_kzalloc(&mwchan->dev, (indio_dev->num_channels) * sizeof(struct iio_chan_spec), GFP_KERNEL);
 	if(!indio_dev->channels)
@@ -454,11 +455,13 @@ static int devm_mw_stream_iio_register(struct iio_dev *indio_dev) {
 		return status;
 	chIdx += mwchan->num_data_chan;
 
-	status = mw_stream_setup_ip_channel(indio_dev, (struct iio_chan_spec *)&indio_dev->channels[chIdx++]);
-	if(status)
-		return status;
+	if (mwchan->mwdev->mw_ip_info->mem && mwchan->ip_info_addr != -EINVAL) {
+		status = mw_stream_setup_ip_channel(indio_dev, (struct iio_chan_spec *)&indio_dev->channels[chIdx++]);
+		if(status)
+			return status;
+	}
 
-	if (mwchan->tlast_cntr_addr != -EINVAL) {
+	if (mwchan->mwdev->mw_ip_info->mem && mwchan->tlast_cntr_addr != -EINVAL) {
 		status = mw_stream_setup_tlast_channel(indio_dev, (struct iio_chan_spec *)&indio_dev->channels[chIdx++]);
 		if(status)
 			return status;
@@ -521,6 +524,9 @@ static struct iio_dev *devm_mw_stream_iio_alloc(
 		dev_err(IP2DEVP(mwdev), "Missing dma-names property for node: %s\n",node->name);
 		return ERR_PTR(status);
 	}
+	status = of_property_read_u32(node, "mathworks,ip-info-reg", &mwchan->ip_info_addr);
+	if(status)
+		mwchan->ip_info_addr = -EINVAL;
 	if (mwchan->iio_direction == IIO_BUFFER_DIRECTION_IN) {
 		status = of_property_read_u32(node, "mathworks,sample-cnt-reg", &mwchan->tlast_cntr_addr);
 		if(status)

@@ -120,11 +120,14 @@ extern struct mathworks_ip_info *devm_mathworks_ip_of_init(
 
 static inline void mw_ip_write32(struct mathworks_ip_info *st, unsigned reg, unsigned val)
 {
-	iowrite32(val, st->regs + reg);
+	if (st->regs)
+		iowrite32(val, st->regs + reg);
 }
 
 static inline unsigned int mw_ip_read32(struct mathworks_ip_info *st, unsigned reg)
 {
+	if (!st->regs)
+		return -1;
 	return ioread32(st->regs + reg);
 }
 
