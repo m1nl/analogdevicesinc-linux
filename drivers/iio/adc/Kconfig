@@ -423,6 +423,18 @@ config ADI_AXI_ADC
 	  To compile this driver as a module, choose M here: the
 	  module will be called adi-axi-adc.
 
+config MP_AXI_VCTCXO
+	tristate "Microphase AXI VCTCXO Control"
+	select REGMAP_MMIO
+	select IIO_BACKEND
+	help
+	  Say yes here to build support for Microphase AXI VCTCXO IP core.
+
+	  If unsure, say N (but it's safe to say "Y").
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called mp-axi-vctcxo.
+
 config ASPEED_ADC
 	tristate "Aspeed ADC"
 	depends on ARCH_ASPEED || COMPILE_TEST
