@@ -211,7 +211,7 @@ out_unlock:
 	return ret;
 }
 
-int mw_sharedmem_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd)
+static int mw_sharedmem_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd)
 {
 	buffer->bytes_per_datum = bpd;
 	return 0;
@@ -1021,7 +1021,7 @@ static int mw_sharedmem_iio_probe(
 		return PTR_ERR(mwregion);
 	} else {
 		/* If region size is >= 1 MB, display size as MB */
-		if (mwregion->region.size >= (2^20)){
+		if (mwregion->region.size >= BIT(20)) {
 			size_disp = mwregion->region.size >> 20;
 		}
 		/* Otherwise display as kB */
