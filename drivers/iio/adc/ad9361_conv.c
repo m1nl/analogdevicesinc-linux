@@ -201,7 +201,7 @@ static struct iio_chan_spec_ext_info axiadc_ext_info[] = {
 	  .scan_type = {						\
 		.sign = _sign,						\
 		.realbits = _bits,					\
-		.storagebits = 16,					\
+		.storagebits = 8,					\
 		.shift = 0,						\
 	  },								\
 	}
@@ -214,7 +214,7 @@ static struct iio_chan_spec_ext_info axiadc_ext_info[] = {
 	  .scan_type = {						\
 		.sign = _sign,						\
 		.realbits = _bits,					\
-		.storagebits = 16,					\
+		.storagebits = 8,					\
 		.shift = 0,						\
 	  },								\
 	}
@@ -240,10 +240,10 @@ static const struct axiadc_chip_info axiadc_chip_info_tbl[] = {
 		.max_testmode = 0,
 		.num_channels = 4,
 		.scan_masks = ad9361_available_scan_masks,
-		.channel[0] = AIM_CHAN(0, 0, 12, 'S'),
-		.channel[1] = AIM_CHAN(1, 1, 12, 'S'),
-		.channel[2] = AIM_CHAN(2, 2, 12, 'S'),
-		.channel[3] = AIM_CHAN(3, 3, 12, 'S'),
+		.channel[0] = AIM_CHAN(0, 0, 8, 'S'),
+		.channel[1] = AIM_CHAN(1, 1, 8, 'S'),
+		.channel[2] = AIM_CHAN(2, 2, 8, 'S'),
+		.channel[3] = AIM_CHAN(3, 3, 8, 'S'),
 	},
 	[ID_AD9361_2] = { /* MCS/MIMO 2x AD9361 */
 		.name = "AD9361-2",
@@ -252,22 +252,22 @@ static const struct axiadc_chip_info axiadc_chip_info_tbl[] = {
 		.num_channels = 8,
 		.num_shadow_slave_channels = 4,
 		.scan_masks = ad9361_2x2_available_scan_masks,
-		.channel[0] = AIM_CHAN(0, 0, 12, 'S'),
-		.channel[1] = AIM_CHAN(1, 1, 12, 'S'),
-		.channel[2] = AIM_CHAN(2, 2, 12, 'S'),
-		.channel[3] = AIM_CHAN(3, 3, 12, 'S'),
-		.channel[4] = AIM_MC_CHAN(4, 4, 12, 'S'),
-		.channel[5] = AIM_MC_CHAN(5, 5, 12, 'S'),
-		.channel[6] = AIM_MC_CHAN(6, 6, 12, 'S'),
-		.channel[7] = AIM_MC_CHAN(7, 7, 12, 'S'),
+		.channel[0] = AIM_CHAN(0, 0, 8, 'S'),
+		.channel[1] = AIM_CHAN(1, 1, 8, 'S'),
+		.channel[2] = AIM_CHAN(2, 2, 8, 'S'),
+		.channel[3] = AIM_CHAN(3, 3, 8, 'S'),
+		.channel[4] = AIM_MC_CHAN(4, 4, 8, 'S'),
+		.channel[5] = AIM_MC_CHAN(5, 5, 8, 'S'),
+		.channel[6] = AIM_MC_CHAN(6, 6, 8, 'S'),
+		.channel[7] = AIM_MC_CHAN(7, 7, 8, 'S'),
 	},
 	[ID_AD9364] = {
 		.name = "AD9364",
 		.max_rate = 61440000UL,
 		.max_testmode = 0,
 		.num_channels = 2,
-		.channel[0] = AIM_CHAN(0, 0, 12, 'S'),
-		.channel[1] = AIM_CHAN(1, 1, 12, 'S'),
+		.channel[0] = AIM_CHAN(0, 0, 8, 'S'),
+		.channel[1] = AIM_CHAN(1, 1, 8, 'S'),
 	},
 
 };
